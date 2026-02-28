@@ -1,27 +1,100 @@
-body{
+/* Center page */
+body {
+  margin: 0;
+  font-family: 'Segoe UI';
+  background: linear-gradient(to bottom, #eef6f3, #f6f3ea);
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: #fff;
+  min-height: 100vh;
+}
+
+/* Main card */
+#Async-AwaitCalm {
+  width: 420px;
+  padding: 36px 32px;
+  border-radius: 24px;
+
+  /* soft calming glass look */
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.1),
+    0 4px 10px rgba(0, 0, 0, 0.05);
+
+  text-align: center;
+}
+
+/* Title */
+#Async-AwaitCalm h1 {
+  font-size: 26px;
+  margin-bottom: 8px;
+  font-weight: 500;     /* lighter */
+  color: #083c16;  
+  letter-spacing: 0.5px;
+    /* NEW: subtle shadow to pop */
+  text-shadow: 0 2px 8px rgba(255, 255, 255, 0.8);
+}
+
+/* Subtitle */
+.subtitle {
+  margin-bottom: 30px;
+  color: #1c5220;
+  font-size: 14px;
+    /* softer shadow */
+  text-shadow: 0 2px 6px rgba(255, 255, 255, 0.7);
+}
+
+/* Buttons layout */
+#container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
 }
 
 /* Buttons */
-#breakdownbtn {
-  background:blue;
-  color:white;
-  border: 2px solid gray;
-  padding: 0.5rem 1rem;
-  font-family: 'Arial', Courier, monospace;
-  font-size: 1rem;
+#breakdownbtn,
+#calmbtn {
+  font-family: "Segoe UI";
+  font-size: 16px;
+  font-weight: 600;
+
+  border-radius: 22px;
+  padding: 16px;
+  cursor: pointer;
+
+  /* NEW: soft border */
+  border: 1px solid rgba(0, 0, 0, 0.08);
+
+  /* NEW: gentle shadow */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  transition: all 0.2s ease;
 }
 
+/* Blue calming button */
+#breakdownbtn {
+  background: linear-gradient(145deg, #cfe3ff, #a9c7ff);
+  color: #1c3f8c;
+}
 
+/* Pink soothing button */
 #calmbtn {
-  background:blue;
-  color:white;
-  border: 2px solid gray;
-  padding: 0.5rem 1rem;
-  font-family: 'Arial', Courier, monospace;
-  font-size: 1rem;
+  background: linear-gradient(145deg, #ba57ad, #9e4d9be5);
+  color: #802170;
+}
+
+/* Hover effect */
+#breakdownbtn:hover,
+#calmbtn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* Click effect */
+#breakdownbtn:active,
+#calmbtn:active {
+  transform: translateY(0);
+  box-shadow: none;
 }

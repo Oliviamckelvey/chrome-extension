@@ -1,0 +1,215 @@
+Set up the manifest JSON file - this was copy and pasted from chrome extension developer documentation with a few minor changes to adjust the code to make it applicable to our specific code
+
+
+Create 3 other files
+(1) An HTML file (you can use ! to create the basic structure) 
+(2) A JavaScript file to as our main coding area
+(3) CSS file - this is NOT necessary but beneficial for any style to be done 
+
+
+
+You need to include the JS and CSS files in the HTML file - this tells the browser to load and include those resources as part of the page 
+
+
+How to include CSS file?
+a link tag in the head of our HTML file - with ref and href attributes
+
+How to include a JS file?
+a script tag - usually placed in the bottom of our HTML body tag
+
+
+
+Using DOM manipulation - create 2 button elements, START and END, with unique IDs so we can reference and style them in CSS (don't forget display whatever text you desire in the button itself)
+
+
+
+How are we organizing the project so that some code will manipulate our chrome extension pop-up v.s. the code we want to affect the browser/web page it is running on?
+
+2 JavaScript files -> one JS file will affect the pop-up and the second will affect the web page the extension is running on 
+
+
+Create an additional JavaScript file -> content.js
+
+
+
+How 2 adjust the manifest.json file to account for the additional JavaScript file?
+
+"content-scripts" property in manifest.json
+- A label belonging to the manifest that tells chrome the following scripts should run inside web pages
+- The property's value can only be a list/array (must be in square brackets)
+- Inside the list is a single instruction object with two properties "matches" and "js"
+- "matches" property takes a list that has a single value of a string that signifies all web pages are a match
+- "js" property takes a list with a single value of a string of the file you want to execute on every match/web page
+
+
+Now our file is set up so that any JavaScript written in the content.js file will be applied to the webpage
+
+
+
+//WE ARE HERE WITH THE ACTUAL CODING PROCESS
+
+
+How do we handle the START and STOP buttons in pop-up.js (our chrome extension)?
+Add an event listener to each button that waits for the button to clicked and will run the desired functionality based on the action 
+
+
+
+
+When the START button is clicked (pop-up.js)   ->   How do we change a web page's appearance(content.js)?
+
+How to let the content.js (makes changes in the browser) know when and event has occurred in pop-up.js (button has been clicked in our chrome extension)?
+
+Answer: Message Passing
+
+
+
+
+MESSAGE PASSING
+Analogy: Think of our two JavaScript files as two rooms that we cant walk between so in order to do something in the other room you have to slide a note under the door and the person inside that room will read it and react
+
+When it comes to message passing this "note" we want to pass between rooms, is just an tiny object we want to pass between two JavaScript files
+
+Message passing ALWAYS has two sides (1) the sender - the pop-up extension that sends the "note" and (2) the listener - the content script that waits for the "note" and reacts
+
+The chrome extension pop-up has two buttons that will have event listeners, when the event occurs the pop-up sends a "note" to the content script (content.js) and if listening and coded properly the code running in the browser will know to perform certain actions when/if the "note" is received
+
+Remember: pop-up extension can not touch a web page directly, it must send a message - content script must listen for those messages - and messages/notes are nothing but tiny objects
+
+
+
+
+
+POP-UP SIDE MESSAGE PASSING (sender)
+*Perform for each of your two buttons*
+
+Select the button from the HTML file using by ID & add an event listener that waits for a user to click the button
+
+The event listener takes two arguments, an action string, and a response function - in this case the response function will be a asynchronous, take no parameters and does not return anything
+
+In the function body, we need to access the current browser in order to pass it a message (communicate and perform an action on the web browser when a chrome extension button is pressed)
+
+We have to use Chrome's special tool box for extensions to search through the tabs and return only a specific one - the current browser we are one and only the current browser
+
+This search takes time which is why we need to await the response - don't forget to save it to a reference variable
+
+The searching function (query) returns an array with an object inside - to remove the array brackets around the object put a set of brackets around the reference variable
+
+We then need to use Chrome's tool box once more to send a message to the browser using the previous returned tab (reference it by its id property)
+
+
+
+const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+
+chrome -> a special object that chrome gives to extensions  - a tool box of tools only accessible to chrome extensions
+tabs -> one of the tools - tab control center
+query -> a function inside the tab section that is used to search for things 
+{ active: true, currentWindow: true } -> object passed to query function - returns all tabs that match the rules in the object (the rules ensure we are selecting the active & current browser window)
+
+
+chrome.tabs.sendMessage(tab.id, { action: "note" });
+
+chrome -> a special object that Chrome gives to extensions - tool box full of extension powers
+tabs -> a tool from chrome's toolbox that controls the tabs (can do things such as sending a message to a tab)
+sendMessage -> one of tabs abilities - sends a "note" content script running in a specific tab
+tabId -> every browser has a unique number and this is how we send the note to a specific tab
+{ action: "note" } -> the message that is really just an object - requires an action property but value can be any string we want
+
+
+
+
+
+CONTENT SCRIPT SIDE MESSAGE PASSING (listener)
+
+
+
+
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.action === "note") {
+    enableCalm();
+  }
+});
+
+chrome -> a special object that Chrome gives to extensions - tool box full of extension powers
+runtime -> a tool in chrome's toolbox that handles communication inside the Chrome extension - just signal the content.js code to use this message passing system
+onMessage -> when the message arrives it will immediately be passed the the event listener as an argument
+addListener((message) => {}) -> an event listener is watching for a message to be sent to the inbox, when the event occurs, the function passed as an argument, will access that message, check it, and perform some action based on it
+
+
+
+
+
+How do we want the browser to be affected when the START button is pressed?
+(1) Change the web browsers appearance to be calmer (maybe even rain calming emojis)
+(2) Play a soothing song/sound (need to access an API?)
+(3) Randomly generate a different encouraging/calming quote each time (definitely need an API)
+
+How do we want the browser to be affected when the END button is pressed?
+(1) Remove/undo all visual changes made to the web browser
+(2) Pause/silence the calming audio 
+(3) Remove the encouraging quote from the page 
+
+
+
+
+START BUTTON AFFECT - BROWSER SIDE
+*create separate functions for each number*
+
+(1) Web Page Appearance
+- In the content.js file we need to create a style tag HTML element that will hold CSS rules (instructions for how something should look) 
+- Add a class of CSS rules to the style tag using .textContent - class should be written as a string - the div this is applied to will over lay the the entire web page - so our styled div will cover all elements in browser
+- Append the style tag to the current web page's HTML head tag (which is where styling goes) so the browser has access to the rules we created and want to apply
+- Next create a div HTML element and save it under a reference variable
+- Using the reference variable, add the CSS rules/class you passed to the web page to the div 
+- Finally append the styled div to the web page's body - if done correctly will applying styling to any browser
+
+
+
+
+(2) Play Soothing Music
+- 
+
+
+
+(3) Randomly Generate an Affirmation Quote (API)
+- 
+
+
+
+
+END BUTTON AFFECT - BROWSER SIDE
+*create separate functions for each number*
+(1) Remove/Undo Visual Changes Made to the Web Browser
+
+
+(2) Pause/silence the Calming Audio 
+
+
+(3) Remove the Encouraging Quote from the Page 
+
+
+
+
+
+
+What visual affects/styling (CSS) do we want to occur?
+(1) Dim the brightness
+(2) Blur the screen 
+(3) Rain calming emojis
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
