@@ -16,7 +16,7 @@ body {
   border-radius: 24px;
 
   /* soft calming glass look */
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(10, 63, 16, 0.6);
   backdrop-filter: blur(12px);
 
   box-shadow: 
@@ -31,7 +31,7 @@ body {
   font-size: 26px;
   margin-bottom: 8px;
   font-weight: 500;     /* lighter */
-  color: #083c16;  
+  color: #225f32;  
   letter-spacing: 0.5px;
     /* NEW: subtle shadow to pop */
   text-shadow: 0 2px 8px rgba(255, 255, 255, 0.8);
@@ -64,8 +64,7 @@ body {
   padding: 16px;
   cursor: pointer;
 
-  /* NEW: soft border */
-  border: 1px solid rgba(0, 0, 0, 0.08);
+
 
   /* NEW: gentle shadow */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -77,12 +76,14 @@ body {
 #breakdownbtn {
   background: linear-gradient(145deg, #cfe3ff, #a9c7ff);
   color: #1c3f8c;
+  border: 2px solid #010806;
 }
 
 /* Pink soothing button */
 #calmbtn {
-  background: linear-gradient(145deg, #ba57ad, #9e4d9be5);
-  color: #802170;
+background: linear-gradient(145deg, #f8ddea, #f2cfe3);
+color: #7a3a5f;
+border: 2px solid #061062;
 }
 
 /* Hover effect */
@@ -97,4 +98,18 @@ body {
 #calmbtn:active {
   transform: translateY(0);
   box-shadow: none;
+}
+
+/* visual effect setting */
+.calm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999999;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  opacity: 1;
 }
