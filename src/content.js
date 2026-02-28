@@ -9,13 +9,15 @@ chrome.runtime.onMessage.addListener((message) => {
         //perform whatever functionality you want to occur when the breakdown button is pressed
         visualEffect();
         playAudio();
+        generateQuote();
     }
 
     //if the calm down button in the chrome extension is pressed -> the pop up will send the message "reset"
     if (message.action === "reset") {
         //perform whatever functionality you want to occur when the calmdown button is pressed
-        resetVisuals()
-        stopAudio()
+        resetVisuals();
+        stopAudio();
+        removeQuote();
   }
 });
 
@@ -137,20 +139,73 @@ function stopAudio() {
 
 //QUOTE GENERATION
 
-//create an async function that interacts with the Affirmation Quote Generator API
-    //fetch data (a quote) from the API's endpoint
-    //convert the response JSON object to JS object 
-    //access the quote
-    //create a div element that will go ontop of everythign 
-    //populate teh div with the quote
+function requestQuoteFromBackground() {
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage({ action: "GET_QUOTE" }, (response) => {
+      resolve(response?.quote);
+    });
+  });
+}
 
+async function generateQuote() {
+  const quoteText = await requestQuoteFromBackground();
+  console.log("Quote received:", quoteText);
 
+  // Create or reuse the quote box
+  let box = document.getElementById("calmQuoteBox");
 
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "calmQuoteBox";
 
+    // POSITIONING (center of screen)
+    box.style.position = "fixed";
+    box.style.top = "50%";
+    box.style.left = "50%";
+    box.style.transform = "translate(-50%, -50%)";
+
+    // APPEARANCE
+    box.style.background = "rgba(255, 255, 255, 0.95)";
+    box.style.padding = "30px";
+    box.style.borderRadius = "16px";
+    box.style.maxWidth = "500px";
+    box.style.width = "80%";
+
+    // TEXT STYLING
+    box.style.fontSize = "22px";
+    box.style.lineHeight = "1.6";
+    box.style.textAlign = "center";
+    box.style.color = "#1c3f2e";
+    box.style.fontFamily = "Segoe UI, sans-serif";
+
+    // DEPTH (floating effect)
+    box.style.boxShadow = "0 20px 60px rgba(0, 0, 0, 0.3)";
+    box.style.zIndex = "9999999";
+
+    // OPTIONAL: subtle fade-in
+    box.style.opacity = "0";
+    box.style.transition = "opacity 0.5s ease";
+
+    document.body.appendChild(box);
+
+    // trigger fade-in
+    requestAnimationFrame(() => {
+      box.style.opacity = "1";
+    });
+  }
+
+  box.textContent = quoteText || "Breathe. You're probably ok!";
+}
 
 
 //create a function that removes the quote from the browser/visual field
+function removeQuote() {
+  const box = document.getElementById("calmQuoteBox");
 
+  if (box) {
+    box.remove();
+  }
+}
 
 
 

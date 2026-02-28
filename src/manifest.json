@@ -3,18 +3,25 @@
   "description": "Tinghong & Olivia's First Chrome Extension",
   "version": "1.0",
   "manifest_version": 3,
-  
+
   "action": {
     "default_popup": "index.html",
     "default_icon": "assets/ex.png"
   },
-  
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "host_permissions": ["https://www.affirmations.dev/*"],
+
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
       "js": ["content.js"]
     }
   ],
+
   "web_accessible_resources": [
     {
       "resources": ["assets/calmSound.mp3"],
